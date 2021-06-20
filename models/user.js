@@ -26,9 +26,13 @@ const UserSchema = new mongoose.Schema({
       status: {
         type: Number,
         default: 0
+      },
+      classLists: {
+        type: Array,
+        default: [{}]
       }
     },
-  {
+    {
       //choose the collection to find the data from
       collection: 'users'
     }

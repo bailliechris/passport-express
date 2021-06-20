@@ -4,7 +4,7 @@ const passport = require('passport');
 
 // auth login page
 router.get('/login', (req, res) => {
-    res.send('Login here!')
+    res.send('Login options here!');
 });
 
 // auth with google

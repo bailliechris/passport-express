@@ -1,6 +1,9 @@
 // 20.1.21 - Register tested / Reseting password soon?
+// ../users
 
 const express = require('express');
+const uuid = require('uuid');
+//import { v4 as uuidv4 } from 'uuid';
 const router = express.Router();
 // Load User model
 const User = require('../models/user');
@@ -29,13 +32,13 @@ router.post('/test', (req, res) => {
 router.post('/login', (req, res) => {
     console.log(req.body);
 
-    User.findOne({user:req.body.user})
+    User.findOne({user:req.body.name})
     .then(user => {
         if(user) {
             bcrypt.compare(req.body.pw, user.pw, function(err, result) {
                 if (result === true) {
                     let data = {
-                        user: user.user,
+                        user: user.name,
                         _id: user._id
                     }
                     // Return results on success
@@ -63,10 +66,10 @@ router.post('/login', (req, res) => {
 router.post('/register', (req, res) => {
     // Check details before creating the user
     // Are the matching variable names causing an issue here?
-    const { user, email, pw } = req.body;
+    const { name, email, pw } = req.body;
     let errors = [];
   
-    if (!user || !email || !pw ) {
+    if (!name || !email || !pw ) {
       errors.push({ msg: 'Please enter all fields' });
     }
   
@@ -77,7 +80,7 @@ router.post('/register', (req, res) => {
     if (errors.length > 0) {
       res.send({
         errors,
-        user,
+        name,
         email,
         pw
       });
@@ -97,7 +100,8 @@ router.post('/register', (req, res) => {
                 // Create new user
                 bcrypt.hash(req.body.pw, saltRounds, function(err, hash) {
                     var newUser = new User({
-                        user: req.body.user,
+                        id: uuid.v4(),
+                        name: req.body.name,
                         pw: hash,
                         email: req.body.email
                     });
@@ -114,7 +118,7 @@ router.post('/register', (req, res) => {
 
 // Protected route - check with session
 router.get('/foo', checkSession, (req, res) => {
-    res.send("You're still logged in!" + req.session.user.user);
+    res.send("You're still logged in!" + req.session.user.name);
 });
 
 // Protected Admin route
@@ -124,7 +128,7 @@ router.get('/bar', checkAdmin, (req, res) => {
 
 // Logout
 router.get('/logout', (req, res) => {
-    let name = req.session.user.user;
+    let name = req.session.user.name;
     req.session.destroy();
     res.send("Logged Out: " + name);
 });

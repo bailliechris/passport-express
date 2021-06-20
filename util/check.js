@@ -7,6 +7,7 @@ const User = require('../models/user');
 var checkUser = function (req, res, next) {
     if (req.user) {
         res.send('Found in session');
+        return next();
     }
     else {
         res.send('Not in session');
