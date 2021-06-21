@@ -44,6 +44,8 @@ app.use(session({
 app.use('/', require('./routes/index'));
 // App only users - register, login, fetch details
 app.use('/users', require('./routes/users'));
+// Class Lists
+app.use('/lists', require('./routes/lists'));
 // Google Passport users
 app.use('/auth', require('./routes/auth'));
 

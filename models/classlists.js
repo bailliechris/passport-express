@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 //Define a Schema
 //const Schema = mongoose.Schema;
 // Create User Schema
-const UserSchema = new mongoose.Schema({
-      id: {
+const ClassListSchema = new mongoose.Schema({
+      ownerid: {
         type: String,
         required: true
       },
@@ -15,26 +15,15 @@ const UserSchema = new mongoose.Schema({
         maxlength: 20,
         trim: true   
       },
-      pw: { 
-        type: String,
-        required: false  
-      },
-      email: {
-        type: String,
-        required: false
-      },
-      status: {
-        type: Number,
-        default: 0
-      },
-      classLists: {
+      pupils: { 
         type: Array,
-        default: []
+        default: [],
+        required: false  
       }
     },
     {
       //choose the collection to find the data from
-      collection: 'users'
+      collection: 'classes'
     }
 );
 // Create Post Schema
@@ -55,5 +44,5 @@ const UserSchema = new mongoose.Schema({
 
 */
 // We then need to create models to use it
-module.exports = mongoose.model("User", UserSchema);
+module.exports = mongoose.model("ClassList", ClassListSchema);
 //module.exports = mongoose.model("Post", PostSchema);
