@@ -5,7 +5,8 @@ require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const app = express();
-const port = process.env.PORT || 3000;
+var cors = require('cors');
+const port = process.env.PORT || 5000;
 const mongoURI = process.env.MONGO_URI;
 const passport = require('passport');
 const passportSetup = require('./config/passport-setup');
@@ -21,7 +22,10 @@ const mongoOptions = {
 
 // body-parser middleware
 app.use(express.json()); // for parsing application/json
-app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+app.use(express.urlencoded({ extended: false })); // for parsing application/x-www-form-urlencoded
+
+// Config CORS options
+app.use(cors());
 
 // Set up passport
 app.use(passport.initialize());

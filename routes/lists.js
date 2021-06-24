@@ -17,7 +17,7 @@ router.get('/', checkSession, (req, res) => {
 
 // Find a specific users classes
 router.post('/classes', checkSession, (req, res) => {
-    ClassList.find({ownerid: req.body.id}, (err, docs) => {
+    ClassList.find({ownerid: req.body.ownerid}, (err, docs) => {
         res.send(docs); 
     });
 
@@ -26,13 +26,16 @@ router.post('/classes', checkSession, (req, res) => {
 
 // Add a new classlist and update the user with classlist
 router.post('/add', checkSession, (req, res) => {
+    console.log("====== req.Body ======");
+    console.log(req.body);
+
     var newList = new ClassList({
-        ownerid: req.body.id,
+        ownerid: req.body.ownerid,
         name: req.body.name,
         pupils: req.body.pupils
     });
-    newList.save().then(user => {
-        res.send(user);
+    newList.save().then(list => {
+        res.send(list);
     }, (e) => { // Server error when updating database
         res.status(400).send(e);
     });

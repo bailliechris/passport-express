@@ -7,6 +7,7 @@ const uuid = require('uuid');
 const router = express.Router();
 // Load User model
 const User = require('../models/user');
+const ClassList = require('../models/classlists');
 const bcrypt = require('bcrypt');
 const {checkSession, checkAdmin} = require('../util/check');
 const saltRounds = 10;
@@ -30,20 +31,33 @@ router.post('/test', (req, res) => {
 
 // Login Page Response
 router.post('/login', (req, res) => {
-    console.log(req.body);
 
-    User.findOne({user:req.body.name})
+    // Find user by e-mail
+    User.findOne({email:req.body.email})
     .then(user => {
-        if(user) {
+        if (user) {
+            // Check password matches salted password from DB
             bcrypt.compare(req.body.pw, user.pw, function(err, result) {
                 if (result === true) {
-                    let data = {
-                        user: user.name,
-                        _id: user._id
-                    }
-                    // Return results on success
-                    req.session.user = user;
-                    res.send(data);
+                    // Find users stored classes - using returned _id
+                    ClassList.find({ ownerid: user._id }, (err, docs) => {
+                        let classlists = [];
+
+                        // Extract classes from the returned documents
+                        if (docs.length > 0) {
+                            classlists = docs.map(c => c.pupils);
+                        }
+
+                        let data = {
+                            user: user.name,
+                            _id: user._id,
+                            classes: classlists
+                        }
+                        // Add user to session
+                        req.session.user = user;
+                        // Return user details and classlists
+                        res.send(data);
+                    });
                 }
                 else {
                     //Failed to match password
@@ -69,14 +83,17 @@ router.post('/register', (req, res) => {
     const { name, email, pw } = req.body;
     let errors = [];
   
+    // Check for missing elements
     if (!name || !email || !pw ) {
       errors.push({ msg: 'Please enter all fields' });
     }
   
+    // Check password length and report error
     if (pw.length < 6) {
       errors.push({ msg: 'Password must be at least 6 characters' });
     }
   
+    // return errors to front
     if (errors.length > 0) {
       res.send({
         errors,
