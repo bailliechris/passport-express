@@ -45,7 +45,12 @@ router.post('/login', (req, res) => {
 
                         // Extract classes from the returned documents
                         if (docs.length > 0) {
-                            classlists = docs.map(c => c.pupils);
+                            classlists = docs.map(c => {
+                                return {
+                                    name: c.name,
+                                    pupils: c.pupils
+                                }
+                            });
                         }
 
                         let data = {
