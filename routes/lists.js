@@ -4,6 +4,7 @@ const router = express.Router();
 const User = require('../models/user');
 const ClassList = require('../models/classlists');
 // Load middleware
+const db = require('../util/db');
 const {checkSession, checkAdmin} = require('../util/check');
 
 // Show all classes stored
@@ -16,29 +17,26 @@ router.get('/', checkSession, (req, res) => {
 });
 
 // Find a specific users classes
-router.post('/classes', checkSession, (req, res) => {
-    ClassList.find({ownerid: req.body.ownerid}, (err, docs) => {
-        res.send(docs); 
-    });
+router.post('/classes', checkSession, async (req, res) => {
+    let docs = await db.getUserClasses(req.body.ownerid);
 
-    //res.send(result);
+    res.send(docs);
 });
 
 // Add a new classlist and update the user with classlist
 router.post('/add', checkSession, (req, res) => {
-    console.log("====== req.Body ======");
-    console.log(req.body);
+    let result = db.addNewClass(req.body.ownerid, req.body.name, req.body.pupils);
 
-    var newList = new ClassList({
-        ownerid: req.body.ownerid,
-        name: req.body.name,
-        pupils: req.body.pupils
-    });
-    newList.save().then(list => {
-        res.send(list);
-    }, (e) => { // Server error when updating database
-        res.status(400).send(e);
-    });
+    if (result) {
+        res.send({
+            ownerid: req.body.ownerid,
+            name: req.body.name,
+            pupils: req.body.pupils
+        });
+    }
+    else {
+        res.send(false);
+    }
 });
 
 module.exports = router;
