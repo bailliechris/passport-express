@@ -48,7 +48,8 @@ router.post('/login', (req, res) => {
                             classlists = docs.map(c => {
                                 return {
                                     name: c.name,
-                                    pupils: c.pupils
+                                    pupils: c.pupils,
+                                    _id: c._id
                                 }
                             });
                         }
